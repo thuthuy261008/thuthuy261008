@@ -1,0 +1,292 @@
+#include<iostream>
+#include<string>
+using namespace std;
+class Employee
+{
+public:
+    Employee() {}
+    Employee(string name1, int age1, string eCode1, double salary1);
+    Employee* getLink()
+    {
+        return link;
+    }
+    void setLink(Employee* newLink)//tao node moi
+    {
+        link = newLink;
+    }
+    void setName(string newName)//ham nhap ten moi
+    {
+        name = newName;
+    }
+    string getName()
+    {
+        return name;
+    }
+    void setAge(int newAge)//nt
+    {
+        age = newAge;
+    }
+    int getAge()
+    {
+        return age;
+    }
+    void setCode(string newCode)//nt
+    {
+        eCode = newCode;
+    }
+    string getCode()
+    {
+        return eCode;
+    }
+    double getSalary()//nt
+    {
+        return salary;
+    }
+    void setSalary(double newSalary)
+    {
+        salary = newSalary;
+    }
+    void printInfo()
+    {
+        cout << "Ten nhan vien:" << name << "\n";
+        cout << "Ma nhan vien:" << eCode << "\n";
+        cout << "Tuoi nhan vien:" << age << "\n";
+        cout << "Luong cua nhan vien:" << salary << "\n";
+        cout << "\n";
+
+    }
+private:
+    string name; //Ten
+    int age; //Tuoi
+    string eCode; //Ma so nhan vien
+    double salary; //Luong
+    Employee* link; //Lien ket den phan tu tiep theo
+};
+
+Employee::Employee(string name1, int age1, string eCode1, double salary1)
+{
+    name = name1;
+    age = age1;
+    eCode = eCode1;
+    salary = salary1;
+}
+class LinkList
+{
+public:
+    LinkList()
+    {
+        head = NULL;
+    }
+    void insertEmployee(Employee* e);
+    void deleteEmployee(string eCode);
+    void updateEmployee(Employee* newEmp);
+    Employee* search(string eCode);
+    Employee* searchNodeBefore(string eCode);
+    void printList();
+    void printSenior();
+    void sort();
+private:
+    Employee* head;
+};
+
+void LinkList::insertEmployee(Employee* e)
+{
+    e->setLink(head);
+    head = e;
+}
+
+
+void LinkList::deleteEmployee(string eCode)
+{
+    Employee* discard = search(eCode);
+    if (discard == NULL)
+    {
+        cout << "Khong tim thay sinh vien can xoa" << endl;
+        return;
+    }
+    else
+    {
+        Employee* before = searchNodeBefore(eCode);
+        before->setLink(discard->getLink());
+        delete discard;
+    }
+}
+Employee* LinkList::search(string eCode)
+{
+    Employee* here = head;
+    while (here != NULL && here->getCode() != eCode)
+        here = here->getLink();
+    return here;
+}
+
+Employee* LinkList::searchNodeBefore(string eCode)
+{
+    Employee* here = head;
+    while (here != NULL)
+    {
+        Employee* next = here->getLink();
+        if (next->getCode() == eCode)break;
+        else here = here->getLink();
+    }
+    return here;
+}
+
+void LinkList::printList()
+{
+    Employee* here = head;
+    while (here != NULL)
+    {
+        here->printInfo();
+        here = here->getLink();
+    }
+}
+
+void LinkList::printSenior()
+{
+    Employee* here = head;
+    while (here != NULL)
+    {
+        if (here->getAge() > 50)
+            here->printInfo();
+        here = here->getLink();
+    }
+}
+
+void LinkList::sort()
+{
+    Employee* p, * q, * min;
+    p = this->head;
+    while (p->getLink() != NULL)
+    {
+        min = p;
+        q = p->getLink();
+        while (q != NULL)
+        {
+            if (q->getSalary() < p->getSalary())
+                min = q;
+            q = q->getLink();
+        }
+        string ten = min->getName();
+        int tuoi = min->getAge();
+        string ma = min->getCode();
+        double luong = min->getSalary();
+        min->setName(p->getName());
+        min->setAge(p->getAge());
+        min->setCode(p->getCode());
+        min->setSalary(p->getSalary());
+        p->setName(ten);
+        p->setAge(tuoi);
+        p->setCode(ma);
+        p->setSalary(luong);
+        p = p->getLink();
+    }
+}
+
+
+int main()
+{
+    LinkList list;
+    Employee* e;
+    string name, eCode, oldECode, newEcode;
+    int age;
+    double salary;
+    cout << "CHUONG TRINH QUAN LY NHAN VIEN CONG TY" << endl;
+    cout << "1 - Them nhan vien" << endl;
+    cout << "2 - Xoa nhan vien" << endl;
+    cout << "3 - Sua nhan vien" << endl;
+    cout << "4 - In ra thong tin toan bo nhan vien" << endl;
+    cout << "5 - Tim kiem nhan vien" << endl;
+    cout << "6 - In ra nhung nhan vien lau nam (co tuoi lon hon 50)" << endl;
+    cout << "7 - Sap xep cac nhan vien theo luong tang dan." << endl;
+    cout << "8 - Thoat" << endl;
+    int choose;
+    do // Vong lap do- while + cau lenh switch- case
+    {
+        cout << "Chon chuc nang:";
+        cin >> choose;
+        switch (choose)
+        {
+        case 1:
+            cin.ignore();
+            cout << "Nhap ten:"; getline(cin, name);
+            cout << "Nhap ma nhan vien:"; cin >> eCode;
+            e = list.search(eCode);
+          //  if (e != NULL)cout << "Khong co nhan vien nao co ma " << eCode;
+            while (e != NULL)
+            {
+                cout << "ID cua nhan vien khong duoc trung nhau!\nVui long nhap lai!" << endl;
+                cout << "Nhap ma nhan vien:"; cin >> eCode;
+                e = list.search(eCode);
+            }
+            cout << "Nhap tuoi:"; cin >> age;
+            cout << "Nhap luong:"; cin >> salary;
+            while (salary <= 0)
+            {
+                cout << "Vui long nhap muc luong lon hon 0!" << endl;
+                cout << "Nhap lai luong: "; cin >> salary;
+            }
+            list.insertEmployee(new Employee(name, age, eCode, salary));
+            break;
+        case 2:
+            cin.ignore();
+            cout << "Nhap ma nhan vien can xoa:"; getline(cin, eCode);
+            list.deleteEmployee(eCode);
+            break;
+        case 3:
+            cin.ignore();
+            cout << "Nhap ma nhan vien can sua:"; getline(cin, oldECode);
+            e = list.search(oldECode);
+            if (e == NULL)
+            {
+                cout << "Khong co nhan vien co ma " << oldECode;
+                break;
+            }
+            else
+            {
+                cout << "Thong tin cu cua nhan vien:";
+                e->printInfo();
+                cout << "Nhap ten moi:"; getline(cin, name);
+                cout << "Nhap ma so moi:"; getline(cin, newEcode);
+                cout << "Nhap tuoi moi:"; cin >> age;
+                cout << "Nhap luong moi:"; cin >> salary;
+                e->setName(name);
+                e->setCode(newEcode);
+                e->setAge(age);
+                e->setSalary(salary);
+            }
+            break;
+        case 4:
+            cout << "Thong tin cua toan bo nhan vien:" << endl;
+            list.printList();
+            break;
+        case 5:
+            cin.ignore();
+            cout << "Nhap ma nhan vien can tim:"; getline(cin, eCode);
+            e = list.search(eCode);
+            if (e == NULL)cout << "Khong co nhan vien nao co ma " << eCode;
+            else
+            {
+                cout << "Thong tin tim thay ve nhan vien:" << "\n";
+                e->printInfo();
+            }
+            break;
+        case 6:
+            cout << "Danh sach nhung nhan vien tren 50 tuoi:" << endl;
+            list.printSenior();
+            break;
+        case 7:
+        {
+            list.sort();
+            cout << "\nDanh sach nhan vien sau khi sap xep theo luong la:" << endl;
+            list.printList();
+            break;
+        }
+        case 8:
+            exit(0);
+        default:
+            cout << "Nhap sai chuc nang, hay nhap lai!";
+
+        }
+
+    } while (true);
+}
